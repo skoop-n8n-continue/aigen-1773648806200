@@ -1046,7 +1046,7 @@
 
         const DUMMY_APPS = [
             { app_id: 'dummy-html-1', name: 'Promo Banner (Demo)', app_mode: 'html', createdAt: new Date().toISOString(), isDummy: true },
-            { app_id: 'dummy-gsap-1', name: '3D Product Spin (Demo)', app_mode: 'gsap animation v1', createdAt: new Date().toISOString(), isDummy: true }
+            { app_id: 'dummy-gsap-1', name: '3D Product Spin (Demo)', app_mode: 'gsap animation v1', createdAt: new Date().toISOString(), isDummy: true, width: '1920', height: '1080' }
         ];
 
         // ── STATE ──
@@ -1214,13 +1214,14 @@
                 // Fixed Aspect Ratio & Scale
                 const w = parseFloat(app.width);
                 const h = parseFloat(app.height);
+                const contentArea = document.querySelector('.preview-content-area');
 
-                wrapper.style.aspectRatio = `${w} / ${h}`;
+                wrapper.style.aspectRatio = 'auto';
                 wrapper.style.width = '100%';
                 wrapper.style.height = '100%';
-                wrapper.style.maxWidth = '100%';
-                wrapper.style.maxHeight = '100%';
-                wrapper.style.margin = '0';
+                wrapper.style.maxWidth = 'none';
+                wrapper.style.maxHeight = 'none';
+                wrapper.style.margin = '0 auto';
 
                 iframe.style.width = `${w}px`;
                 iframe.style.height = `${h}px`;
@@ -1229,11 +1230,22 @@
                 previewResizeObserver = new ResizeObserver(entries => {
                     for (let entry of entries) {
                         const rect = entry.contentRect;
-                        const scale = Math.min(rect.width / w, rect.height / h);
+                        // Determine max available space in the flex container
+                        const availableW = rect.width;
+                        const availableH = rect.height;
+
+                        const scale = Math.min(availableW / w, availableH / h);
+
+                        // Set the wrapper explicitly to the scaled dimensions
+                        wrapper.style.width = (w * scale) + 'px';
+                        wrapper.style.height = (h * scale) + 'px';
+
+                        // Apply the transform to scale the iframe down to match the wrapper size
                         iframe.style.transform = `scale(${scale})`;
                     }
                 });
-                previewResizeObserver.observe(wrapper);
+                // Crucial fix: Observe the flex container, not the wrapper
+                previewResizeObserver.observe(contentArea);
             } else {
                 // Responsive
                 wrapper.style.aspectRatio = 'auto';

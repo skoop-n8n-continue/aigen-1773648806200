@@ -386,19 +386,15 @@
         }
 
         .preview-frame-wrapper {
-            width: 100%;
-            max-width: 800px;
-            height: 100%;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             overflow: hidden;
             border: 1px solid var(--border-color);
+            position: relative;
         }
 
         iframe {
-            width: 100%;
-            height: 100%;
             border: none;
         }
 
@@ -856,15 +852,16 @@
 
             <div class="editor-body">
                 <!-- Canvas / Preview -->
-                <div class="preview-container">
-                    <div class="preview-toolbar">
+                <div class="preview-container" style="min-height:0;">
+                    <div class="preview-toolbar" style="flex-shrink:0;">
                         <!-- Clean UI buttons replacing old refresh/new tab -->
                         <button class="btn-icon" title="Refresh Preview" onclick="refreshPreview()"><i class="fa-solid fa-arrow-rotate-right"></i></button>
                         <button class="btn-icon" title="Open in New Tab" onclick="openPreviewExternal()"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
-                        
+
                     </div>
-                    <div class="preview-frame-wrapper">
-                        <iframe id="previewIframe" srcdoc="
+                    <div class="preview-content-area" style="flex:1; width:100%; min-height:0; display:flex; align-items:center; justify-content:center;">
+                        <div class="preview-frame-wrapper">
+                            <iframe id="previewIframe" srcdoc="
                             <html>
                             <body style='display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif; background:#0f172a; color:white;'>
                                 <div style='text-align:center;'>
@@ -883,6 +880,7 @@
 </body>
                             </html>
                         "></iframe>
+                        </div>
                     </div>
                 </div>
 
@@ -1186,6 +1184,8 @@
 
 
         // ── APP SELECTION & EDITOR ──
+        let previewResizeObserver = null;
+
         async function selectApp(appId, isDummy) {
             let app;
             if (isDummy) {
@@ -1202,15 +1202,38 @@
 
             const iframe = document.getElementById('previewIframe');
             const wrapper = document.querySelector('.preview-frame-wrapper');
-            
+
+            if (previewResizeObserver) {
+                previewResizeObserver.disconnect();
+                previewResizeObserver = null;
+            }
+
+            iframe.style.cssText = 'border: none;';
+
             if (app.width && app.height) {
-                // Fixed Aspect Ratio
-                wrapper.style.aspectRatio = `${app.width} / ${app.height}`;
-                wrapper.style.width = 'auto';
-                wrapper.style.height = 'auto';
+                // Fixed Aspect Ratio & Scale
+                const w = parseFloat(app.width);
+                const h = parseFloat(app.height);
+
+                wrapper.style.aspectRatio = `${w} / ${h}`;
+                wrapper.style.width = '100%';
+                wrapper.style.height = '100%';
                 wrapper.style.maxWidth = '100%';
                 wrapper.style.maxHeight = '100%';
-                wrapper.style.margin = 'auto';
+                wrapper.style.margin = '0';
+
+                iframe.style.width = `${w}px`;
+                iframe.style.height = `${h}px`;
+                iframe.style.transformOrigin = '0 0';
+
+                previewResizeObserver = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        const rect = entry.contentRect;
+                        const scale = Math.min(rect.width / w, rect.height / h);
+                        iframe.style.transform = `scale(${scale})`;
+                    }
+                });
+                previewResizeObserver.observe(wrapper);
             } else {
                 // Responsive
                 wrapper.style.aspectRatio = 'auto';
@@ -1219,6 +1242,10 @@
                 wrapper.style.maxWidth = '800px';
                 wrapper.style.maxHeight = 'none';
                 wrapper.style.margin = '0 auto';
+
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.transform = 'none';
             }
 
             // Clear chat

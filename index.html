@@ -561,6 +561,12 @@
             color: var(--accent);
         }
 
+        .prompt-chip.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
         .input-group {
             display: flex;
             gap: 10px;
@@ -916,13 +922,13 @@
                             <div class="chat-footer">
                                 <!-- Pre-defined prompt system -->
                                 <div class="prompt-suggestions">
-                                    <div class="prompt-chip" onclick="usePrompt('Think about and provide options before implementing')">
+                                    <div class="prompt-chip" id="thinkPromptToggle" onclick="toggleThinkPrompt(this)">
                                         <i class="fa-regular fa-lightbulb"></i> Think & Provide Options
                                     </div>
-                                    <div class="prompt-chip" onclick="usePrompt('Apply my company branding (colors, logos, fonts)')">
+                                    <div class="prompt-chip" onclick="usePrompt('apply the current users company branding. company info: some company info. provided brand guidelines: some brand guidelines that users upload in other part of portal')">
                                         <i class="fa-solid fa-palette"></i> Add My Branding
                                     </div>
-                                    <div class="prompt-chip" onclick="usePrompt('Test and fix this app using Playwright to ensure no glitches')">
+                                    <div class="prompt-chip" onclick="usePrompt('use playwright to test the app / Take a look at the video, fix it up and make it look perfect and not glitchy, use whatever techniques or libraries you need')">
                                         <i class="fa-solid fa-wrench"></i> Test & Fix
                                     </div>
                                 </div>
@@ -1548,6 +1554,10 @@
             }
         }
 
+        function toggleThinkPrompt(el) {
+            el.classList.toggle('active');
+        }
+
         function usePrompt(text) {
             document.getElementById('chatInput').value = text;
             sendMessage();
@@ -1557,8 +1567,14 @@
         async function sendMessage() {
             if (isSending || !selectedApp) return;
             const input = document.getElementById('chatInput');
-            const text = input.value.trim();
+            let text = input.value.trim();
             if (!text) return;
+
+            const thinkToggle = document.getElementById('thinkPromptToggle');
+            if (thinkToggle && thinkToggle.classList.contains('active')) {
+                text += " Do not create or modify any files yet. First let's discuss and decide on what to make. Give me some create design choices that you think would look really cool and I will tell you which I like most .";
+                thinkToggle.classList.remove('active');
+            }
 
             isSending = true;
             input.disabled = true;

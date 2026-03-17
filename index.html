@@ -356,6 +356,7 @@
             align-items: center;
             position: relative;
             padding: 20px;
+            min-width: 0; /* Prevents flex blowout from large iframes */
         }
 
         .preview-toolbar {
@@ -401,6 +402,7 @@
         /* Editor Sidebar (Chat & Config) */
         .editor-sidebar {
             width: 380px;
+            flex-shrink: 0;
             background: var(--bg-sidebar);
             border-left: 1px solid var(--border-color);
             display: flex;
@@ -859,7 +861,7 @@
                         <button class="btn-icon" title="Open in New Tab" onclick="openPreviewExternal()"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
 
                     </div>
-                    <div class="preview-content-area" style="flex:1; width:100%; min-height:0; display:flex; align-items:center; justify-content:center;">
+                    <div class="preview-content-area" style="flex:1; width:100%; min-height:0; min-width:0; display:flex; align-items:center; justify-content:center;">
                         <div class="preview-frame-wrapper">
                             <iframe id="previewIframe" srcdoc="
                             <html>
@@ -1210,8 +1212,13 @@
 
             iframe.style.cssText = 'border: none;';
 
-            const appW = app.width || (app.metadata && app.metadata.width) || (app.metadata && app.metadata.app_width);
-            const appH = app.height || (app.metadata && app.metadata.height) || (app.metadata && app.metadata.app_height);
+            let meta = app.metadata;
+            if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) { meta = null; }
+            }
+
+            const appW = app.width || (meta && meta.width) || (meta && meta.app_width) || (meta && meta.appWidth);
+            const appH = app.height || (meta && meta.height) || (meta && meta.app_height) || (meta && meta.appHeight);
 
             if (appW && appH) {
                 // Fixed Aspect Ratio & Scale

@@ -37,11 +37,21 @@ function hasRefreshParam(url) {
   }
 }
 
+function shouldRefresh(request) {
+  if (hasRefreshParam(request.url)) return true;
+  try {
+    const referer = request.referrer || '';
+    if (referer && new URL(referer).searchParams.get('refresh') === 'true') return true;
+  } catch (_) {}
+  return false;
+}
+
 function normalizeUrl(url) {
   try {
     const u = new URL(url);
     u.searchParams.delete('refresh');
     u.searchParams.delete('ts');
+    u.searchParams.delete('_cb');
     return u.toString();
   } catch (_) {
     return url;
@@ -80,7 +90,7 @@ self.addEventListener('activate', event => {
 // Strategy priority:
 //   1. Non-GET requests            — pass through unchanged
 //   2. Network-only hosts          — always fetch from network, never cache
-//   3. ?refresh=true               — bust cache entry, fetch fresh, re-cache
+//   3. ?refresh=true (URL/referer) — bust cache entry, fetch fresh, re-cache
 //   4. index.html                  — network-first (picks up new deployments)
 //   5. Everything else             — cache-first, fallback to network then cache
 // ---------------------------------------------------------------------------
@@ -97,8 +107,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // 2. ?refresh=true — bust cache entry, fetch fresh, re-cache, return fresh
-  if (hasRefreshParam(url)) {
+  // 2. ?refresh=true (on URL or referer) — bust cache entry, fetch fresh, re-cache
+  if (shouldRefresh(request)) {
     const normalized = normalizeUrl(url);
     event.respondWith(
       caches.open(CACHE_NAME).then(async cache => {

@@ -362,17 +362,16 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            padding: 20px;
-            min-width: 0; /* Prevents flex blowout from large iframes */
+            padding: 10px;
+            min-width: 0;
         }
 
         .preview-toolbar {
             width: 100%;
-            max-width: 800px;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .btn-icon {
@@ -409,6 +408,8 @@
         /* Editor Sidebar (Chat & Config) */
         .editor-sidebar {
             width: 380px;
+            min-width: 300px;
+            max-width: 700px;
             flex-shrink: 0;
             background: var(--bg-sidebar);
             border-left: 1px solid var(--border-color);
@@ -474,31 +475,36 @@
             border-bottom: 1px dashed #f3f4f6;
         }
 
-        .revert-btn {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: white;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
+        .revert-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 0;
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.15s ease;
+        }
+
+        .chat-messages:hover .revert-divider { opacity: 1; }
+
+        .revert-btn {
             display: flex;
             align-items: center;
             gap: 5px;
-        }
-
-        .message-pair:hover .revert-btn {
-            opacity: 1;
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .revert-btn:hover {
             color: #ef4444;
             border-color: #ef4444;
+            background: #fef2f2;
         }
 
         .msg-bubble {
@@ -662,6 +668,114 @@
             border-radius: 4px;
             font-size: 13px;
         }
+
+        /* ── DYNAMIC CONFIGURATOR ── */
+        .config-area {
+            padding: 14px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .config-area::-webkit-scrollbar { width: 5px; }
+        .config-area::-webkit-scrollbar-track { background: transparent; }
+        .config-area::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+        .config-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-secondary); gap: 10px; text-align: center; padding: 40px; }
+        .config-empty i { font-size: 32px; opacity: 0.3; }
+        .config-empty-text { font-size: 13px; }
+
+        .config-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 12px; color: var(--text-secondary); font-size: 13px; }
+
+        .config-error { padding: 16px; text-align: center; color: var(--text-secondary); font-size: 13px; }
+        .config-error-msg { color: #ef4444; margin-bottom: 8px; }
+        .config-retry { padding: 6px 14px; background: white; border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-secondary); font-family: inherit; font-size: 12px; cursor: pointer; }
+        .config-retry:hover { border-color: var(--accent); color: var(--accent); }
+
+        .config-section { background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: clip; flex-shrink: 0; }
+        .config-section-header { padding: 12px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; background: #f9fafb; border-bottom: 1px solid transparent; }
+        .config-section-header:hover { background: #f3f4f6; }
+        .config-section.collapsed .config-section-header { border-bottom-color: transparent; }
+        .config-section:not(.collapsed) .config-section-header { border-bottom-color: var(--border-color); }
+        .config-section-chevron { transition: transform 0.2s ease; font-size: 12px; color: var(--text-secondary); }
+        .config-section.collapsed .config-section-chevron { transform: rotate(-90deg); }
+        .config-section.collapsed .config-section-body { display: none; }
+        .config-section-title { font-size: 12px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.3px; text-transform: uppercase; }
+        .config-section-badge { margin-left: auto; font-size: 11px; color: var(--text-secondary); font-family: monospace; }
+        .config-section-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+        .config-field { display: flex; flex-direction: column; gap: 4px; }
+        .config-field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+        .config-field-type { font-size: 9px; font-family: monospace; color: #9ca3af; background: #f3f4f6; padding: 1px 5px; border-radius: 3px; }
+
+        .config-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; background: white; color: var(--text-primary); font-family: inherit; font-size: 13px; outline: none; transition: border-color 0.2s; }
+        .config-input::placeholder { color: #9ca3af; }
+        .config-input:focus { border-color: var(--accent); }
+        textarea.config-input { min-height: 64px; resize: vertical; line-height: 1.45; }
+        select.config-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%239ca3af' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 26px; }
+
+        .config-color-wrap { display: flex; align-items: center; gap: 8px; }
+        .config-color-swatch { width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--border-color); cursor: pointer; flex-shrink: 0; position: relative; overflow: hidden; }
+        .config-color-swatch input[type="color"] { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); border: none; cursor: pointer; opacity: 0; }
+        .config-color-hex { flex: 1; }
+
+        .config-toggle-wrap { display: flex; align-items: center; justify-content: space-between; }
+        .config-toggle { width: 38px; height: 22px; border-radius: 11px; background: #e5e7eb; border: none; cursor: pointer; position: relative; transition: all 0.2s; flex-shrink: 0; }
+        .config-toggle.on { background: var(--accent); }
+        .config-toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: white; position: absolute; top: 3px; left: 3px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .config-toggle.on .config-toggle-knob { left: 19px; }
+
+        .config-file-wrap { display: flex; flex-direction: column; gap: 6px; }
+        .config-file-preview { width: 100%; max-height: 120px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border-color); background: #f9fafb; }
+        .config-file-path { font-size: 11px; font-family: monospace; color: #9ca3af; padding: 4px 8px; background: #f9fafb; border-radius: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .config-file-actions { display: flex; gap: 6px; }
+        .config-file-upload-btn { padding: 5px 10px; background: white; border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-secondary); font-family: inherit; font-size: 11px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+        .config-file-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .config-file-pending { font-size: 10px; color: #f59e0b; font-style: italic; }
+
+        .config-collection-table { width: 100%; border: 1px solid var(--border-color); border-radius: 4px; overflow-x: auto; overflow-y: visible; }
+        .config-collection-table::-webkit-scrollbar { height: 4px; }
+        .config-collection-table::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .config-collection-table table { min-width: 100%; border-collapse: collapse; font-size: 12px; }
+        .config-collection-table thead th { background: #f9fafb; padding: 6px 8px; text-align: left; font-weight: 600; color: var(--text-secondary); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+        .config-collection-table tbody td { padding: 5px 8px; border-bottom: 1px solid var(--border-color); vertical-align: middle; max-width: 160px; }
+        .config-collection-table tbody tr:last-child td { border-bottom: none; }
+        .config-collection-table tbody tr:hover { background: #f9fafb; }
+        .config-collection-table .cell-input { width: 100%; padding: 4px 6px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: var(--text-primary); font-family: inherit; font-size: 12px; outline: none; transition: all 0.2s; }
+        .config-collection-table .cell-input:focus { border-color: var(--accent); background: white; }
+        .config-collection-table .cell-input:hover:not(:focus) { background: #f3f4f6; }
+        .config-collection-table .cell-id { font-family: monospace; font-size: 10px; color: #9ca3af; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .config-collection-table .cell-color { display: flex; align-items: center; gap: 4px; }
+        .config-collection-table .cell-color-dot { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border-color); flex-shrink: 0; }
+        .config-collection-table .cell-bool { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+        .config-collection-table .cell-file { display: flex; align-items: center; gap: 4px; }
+        .config-collection-table .cell-file-thumb { width: 24px; height: 24px; border-radius: 3px; object-fit: cover; border: 1px solid var(--border-color); }
+        .config-collection-table .cell-file-name { font-size: 10px; font-family: monospace; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80px; }
+
+        .config-item-drawer { background: #f9fafb; border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; margin-top: 6px; display: flex; flex-direction: column; gap: 10px; }
+        .config-item-drawer-header { display: flex; align-items: center; justify-content: space-between; }
+        .config-item-drawer-title { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+        .config-item-drawer-close { width: 24px; height: 24px; border: 1px solid var(--border-color); background: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #9ca3af; }
+        .config-item-drawer-close:hover { border-color: #ef4444; color: #ef4444; }
+
+        .config-save-bar { border-top: 1px solid var(--border-color); padding: 10px 14px; display: flex; align-items: center; gap: 10px; background: white; flex-shrink: 0; }
+        .config-save-status { flex: 1; font-size: 11px; color: var(--text-secondary); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .config-save-status.saving { color: #f59e0b; }
+        .config-save-status.success { color: #10b981; }
+        .config-save-status.error { color: #ef4444; }
+        .config-save-btn { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 4px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; flex-shrink: 0; white-space: nowrap; }
+        .config-save-btn:hover:not(:disabled) { background: var(--accent-hover); }
+        .config-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── RESIZE HANDLE ── */
+        .editor-sidebar { position: relative; }
+        .panel-resize-handle { position: absolute; left: 0; top: 0; bottom: 0; width: 12px; cursor: col-resize; z-index: 10; background: transparent; display: flex; align-items: center; justify-content: center; }
+        .panel-resize-handle::after { content: ''; width: 3px; height: 40px; border-radius: 2px; background: #d1d5db; transition: all 0.15s ease; }
+        .panel-resize-handle:hover::after, .panel-resize-handle.dragging::after { background: var(--accent); height: 60px; }
+        .resize-overlay { position: fixed; inset: 0; z-index: 200; cursor: col-resize; display: none; }
+        .resize-overlay.active { display: block; }
     </style>
 </head>
 <body>
@@ -900,7 +1014,8 @@
                 </div>
 
                 <!-- Chat & Configurator Sidebar -->
-                <div class="editor-sidebar">
+                <div class="editor-sidebar" id="editorSidebar">
+                    <div class="panel-resize-handle" id="panelResizeHandle"></div>
                     <div class="sidebar-tabs">
                         <div class="tab active" onclick="switchTab('chat', this)">Chat</div>
                         <div class="tab" onclick="switchTab('config', this)">Configurator</div>
@@ -911,16 +1026,13 @@
                         <!-- CHAT TAB -->
                         <div class="tab-pane active" id="tab-chat">
                             <div class="chat-messages" id="chatHistory">
-                                <!-- Dummy Initial Message Pair -->
                                 <div class="message-pair" data-turn="0">
-                                    <button class="revert-btn" onclick="revertTo(0)"><i class="fa-solid fa-clock-rotate-left"></i> Revert to here</button>
                                     <div class="msg-bubble msg-user">Create a dark-themed promo banner for our new summer drinks.</div>
                                     <div class="msg-bubble msg-ai">I've created a dark-themed promo banner featuring summer drinks. I used a dark navy background with teal accents to match standard branding.</div>
                                 </div>
                             </div>
 
                             <div class="chat-footer">
-                                <!-- Pre-defined prompt system -->
                                 <div class="prompt-suggestions">
                                     <div class="prompt-chip" id="thinkPromptToggle" onclick="toggleThinkPrompt(this)">
                                         <i class="fa-regular fa-lightbulb"></i> Think & Provide Options
@@ -941,56 +1053,17 @@
 
                         <!-- CONFIGURATOR TAB -->
                         <div class="tab-pane" id="tab-config">
-                            <div class="config-area">
-                                <h3 style="margin-bottom:20px; font-size:16px;">App Settings</h3>
-
-                                <div class="accordion">
-                                    <div class="accordion-header">
-                                        <span>Inventory Section</span>
-                                        <i class="fa-solid fa-chevron-up"></i>
-                                    </div>
-                                    <div class="accordion-content">
-                                        <div class="form-group">
-                                            <label>Section Title</label>
-                                            <input type="text" value="Summer Specials">
-                                        </div>
-
-                                        <div style="margin-top:10px; font-size:12px; font-weight:600; color:var(--text-secondary);">Products</div>
-                                        <div class="mock-product">
-                                            <span>Iced Matcha Latte</span>
-                                            <i class="fa-solid fa-xmark" style="color:#ef4444; cursor:pointer;"></i>
-                                        </div>
-                                        <div class="mock-product">
-                                            <span>Mango Smoothie</span>
-                                            <i class="fa-solid fa-xmark" style="color:#ef4444; cursor:pointer;"></i>
-                                        </div>
-                                        <button class="btn-secondary" style="margin-top:5px;"><i class="fa-solid fa-plus"></i> Add Product</button>
-                                    </div>
+                            <div class="config-area" id="configBody">
+                                <div class="config-empty">
+                                    <i class="fa-solid fa-gear"></i>
+                                    <span class="config-empty-text">Select an app to configure</span>
                                 </div>
-
-                                <div class="accordion">
-                                    <div class="accordion-header">
-                                        <span>Background</span>
-                                        <i class="fa-solid fa-chevron-down"></i>
-                                    </div>
-                                    <div class="accordion-content" style="display:none;">
-                                        <div class="form-group">
-                                            <label>Background Color</label>
-                                            <div style="display:flex; gap:10px;">
-                                                <input type="color" value="#0f172a" style="padding:0; width:40px; height:35px;">
-                                                <input type="text" value="#0f172a" style="flex:1;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion">
-                                    <div class="accordion-header">
-                                        <span>Menu Configuration Settings</span>
-                                        <i class="fa-solid fa-chevron-down"></i>
-                                    </div>
-                                </div>
-
+                            </div>
+                            <div class="config-save-bar" id="configSaveBar" style="display:none;">
+                                <div class="config-save-status" id="configSaveStatus"></div>
+                                <button class="config-save-btn" id="configSaveBtn" onclick="saveConfigToGitHub()">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Save &amp; Publish
+                                </button>
                             </div>
                         </div>
 
@@ -1004,9 +1077,13 @@
     <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
         <div style="background:white; padding:30px; border-radius:8px; width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
             <h2 style="font-size:20px; font-weight:600; margin-bottom:20px;">Create New App</h2>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
                 <label style="font-size:14px; font-weight:500;">App Name</label>
                 <input type="text" id="inputAppName" style="padding:10px; border:1px solid #e5e7eb; border-radius:6px; font-family:inherit; outline:none;" placeholder="Enter app name">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+                <label style="font-size:14px; font-weight:500;">Mode</label>
+                <select id="inputAppMode" style="padding:10px; border:1px solid #e5e7eb; border-radius:6px; font-family:inherit; outline:none; background:white;"></select>
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button onclick="closeNewAppModal()" style="padding:8px 16px; border:1px solid #e5e7eb; background:white; border-radius:6px; cursor:pointer;">Cancel</button>
@@ -1030,6 +1107,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Resize overlay for panel drag -->
+    <div class="resize-overlay" id="resizeOverlay"></div>
 
     <!-- Toast Container -->
     <div id="toastContainer" style="position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:10px; z-index:2000;"></div>
@@ -1055,8 +1135,27 @@
         };
 
         const APP_TYPES = {
-            'html': { id: 'html', name: 'HTML App Builder', icon: 'fa-code', mode: 'html' },
-            'gsap': { id: 'gsap', name: 'Product Animation Video', icon: 'fa-film', mode: 'gsap animation v1' }
+            'html': {
+                id: 'html',
+                name: 'HTML App Builder',
+                icon: 'fa-code',
+                modes: [
+                    { value: 'html', label: 'HTML', width: '', height: '' },
+                    { value: 'html - config beta', label: 'HTML + Configurator (Beta)', width: '', height: '' },
+                ],
+                defaultMode: 'html'
+            },
+            'gsap': {
+                id: 'gsap',
+                name: 'Product Animation Video',
+                icon: 'fa-film',
+                modes: [
+                    { value: 'gsap animation v1', label: 'GSAP Animation v1', width: '1920', height: '1080' },
+                    { value: 'gsap animation v2', label: 'GSAP Animation v2', width: '1920', height: '1080' },
+                    { value: 'gsap animation v3', label: 'GSAP Animation v3', width: '1920', height: '1080' },
+                ],
+                defaultMode: 'gsap animation v1'
+            }
         };
 
         const DUMMY_APPS = [
@@ -1142,17 +1241,16 @@
             const container = document.getElementById('sidebarApps');
             container.innerHTML = '';
 
-            const targetMode = APP_TYPES[currentAppType].mode;
+            const appType = APP_TYPES[currentAppType];
+            const modeValues = appType.modes.map(m => m.value);
 
-            // 1. Show DUMMY apps for this mode first
-            const typeDummyApps = DUMMY_APPS.filter(a => a.app_mode === targetMode || a.app_mode.startsWith(targetMode.split(' ')[0]));
+            // 1. Show DUMMY apps for these modes
+            const typeDummyApps = DUMMY_APPS.filter(a => modeValues.some(m => a.app_mode === m || a.app_mode.startsWith(m.split(' ')[0])));
 
-            // 2. Show REAL apps for this mode
-            // We use simple matching, allowing 'gsap animation v1' to show in 'gsap' view
+            // 2. Show REAL apps matching any mode in this category
             const typeRealApps = allApps.filter(a => {
-                if(!a.app_mode) return targetMode === 'html'; // default unknown to html
-                if(targetMode === 'html') return a.app_mode === 'html';
-                return a.app_mode.includes('gsap');
+                if (!a.app_mode) return currentAppType === 'html'; // default unknown to html
+                return modeValues.some(m => a.app_mode === m);
             }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
             const combined = [...typeDummyApps, ...typeRealApps];
@@ -1166,18 +1264,17 @@
             let html = '';
             combined.forEach(app => {
                 const icon = currentAppType === 'html' ? 'fa-code' : 'fa-film';
+                const modeLabel = app.app_mode || 'html';
 
                 html += `
                     <div class="app-card-grid">
                         <div style="height:80px; background:#f3f4f6; display:flex; align-items:center; justify-content:center; color:#9ca3af; font-size:24px; position:relative;" onclick="selectApp('${app.app_id}', ${app.isDummy ? 'true' : 'false'})">
                             <i class="fa-solid ${icon}"></i>
                             
-                            <!-- Menu Button -->
                             <div class="instance-menu-btn" style="position:absolute; top:5px; right:5px; background:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); font-size:14px; color:#374151;" onclick="event.stopPropagation(); toggleMenu('menu-${app.app_id}')">
                                 <i class="fa-solid fa-ellipsis"></i>
                             </div>
                             
-                            <!-- Dropdown Menu -->
                             <div id="menu-${app.app_id}" class="instance-menu" onclick="event.stopPropagation();">
                                 <div class="menu-item" onclick="dummyAddPlaylist('${app.app_id}')"><i class="fa-solid fa-plus" style="width:14px;"></i> Add to Playlist</div>
                                 <div class="menu-item" onclick="selectApp('${app.app_id}', ${app.isDummy ? 'true' : 'false'})"><i class="fa-regular fa-eye" style="width:14px;"></i> Preview</div>
@@ -1186,9 +1283,12 @@
                                 <div class="menu-item" style="color:#ef4444; border-top:1px solid #e5e7eb;" onclick="dummyDeleteApp('${app.app_id}')"><i class="fa-regular fa-trash-can" style="width:14px;"></i> Delete</div>
                             </div>
                         </div>
-                        <div style="padding:10px; font-size:13px; font-weight:500; display:flex; align-items:center; gap:8px; background:white;" onclick="selectApp('${app.app_id}', ${app.isDummy ? 'true' : 'false'})">
-                            <i class="fa-solid ${icon}" style="color:var(--accent);"></i>
-                            <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;" title="${escapeHtml(app.name || app.appName || 'Untitled App')}">${escapeHtml(app.name || app.appName || 'Untitled App')}</div>
+                        <div style="padding:10px; font-size:13px; font-weight:500; display:flex; flex-direction:column; gap:2px; background:white;" onclick="selectApp('${app.app_id}', ${app.isDummy ? 'true' : 'false'})">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid ${icon}" style="color:var(--accent);"></i>
+                                <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;" title="${escapeHtml(app.name || app.appName || 'Untitled App')}">${escapeHtml(app.name || app.appName || 'Untitled App')}</div>
+                            </div>
+                            <div style="font-size:10px; color:#9ca3af; margin-left:28px;">${escapeHtml(modeLabel)}</div>
                         </div>
                     </div>
                 `;
@@ -1213,7 +1313,7 @@
 
             document.getElementById('viewPlaylist').style.display = 'none';
             document.getElementById('viewEditor').style.display = 'flex';
-            document.getElementById('editorAppName').innerText = APP_TYPES[currentAppType].name + ' - ' + app.name;
+            document.getElementById('editorAppName').innerText = app.name + ' — ' + (app.app_mode || 'html');
 
             const iframe = document.getElementById('previewIframe');
             const wrapper = document.querySelector('.preview-frame-wrapper');
@@ -1274,9 +1374,9 @@
                 wrapper.style.aspectRatio = 'auto';
                 wrapper.style.width = '100%';
                 wrapper.style.height = '100%';
-                wrapper.style.maxWidth = '800px';
+                wrapper.style.maxWidth = 'none';
                 wrapper.style.maxHeight = 'none';
-                wrapper.style.margin = '0 auto';
+                wrapper.style.margin = '0';
 
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
@@ -1287,6 +1387,9 @@
             document.getElementById('chatHistory').innerHTML = '';
             currentTurn = 1;
 
+            // Reset configurator
+            resetConfiguratorState();
+
             if (isDummy) {
                 // Dummy Load
                 iframe.srcdoc = `<html><body style='display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif; background:#0f172a; color:white;'><h1 style='color:#00b7af;'>Demo Output: ${app.name}</h1></body></html>`;
@@ -1294,7 +1397,6 @@
                 // Add dummy initial message
                 const msgHtml = `
                     <div class="message-pair" data-turn="${currentTurn++}">
-                        <button class="revert-btn" onclick="revertTo(${currentTurn-1})"><i class="fa-solid fa-clock-rotate-left"></i> Revert to here</button>
                         <div class="msg-bubble msg-user">Initial setup request for ${app.name}</div>
                         <div class="msg-bubble msg-ai">I've created the initial structure for your app based on the selected mode.</div>
                     </div>
@@ -1307,6 +1409,7 @@
                 const s3Url = getS3Url(app);
                 loadIframe(s3Url);
                 await loadConversation(app.app_id);
+                if (activePanelTab === 'config') loadConfiguratorData();
             }
         }
 
@@ -1314,12 +1417,20 @@
             document.getElementById('viewEditor').style.display = 'none';
             document.getElementById('viewPlaylist').style.display = 'flex';
             selectedApp = null;
+            resetConfiguratorState();
         }
 
         // ── NEW APP MODAL ──
         function openNewAppModal() {
             document.getElementById('modalOverlay').style.display = 'flex';
             document.getElementById('inputAppName').value = '';
+
+            // Populate mode dropdown with modes for the current app type
+            const appType = APP_TYPES[currentAppType];
+            const sel = document.getElementById('inputAppMode');
+            sel.innerHTML = appType.modes.map(m => `<option value="${m.value}">${m.label}</option>`).join('');
+            sel.value = appType.defaultMode;
+
             setTimeout(() => document.getElementById('inputAppName').focus(), 100);
         }
 
@@ -1334,12 +1445,16 @@
             const btn = document.getElementById('btnCreateApp');
             btn.disabled = true; btn.textContent = 'Creating...';
 
+            const selectedMode = document.getElementById('inputAppMode').value;
+            const appType = APP_TYPES[currentAppType];
+            const modeConfig = appType.modes.find(m => m.value === selectedMode) || appType.modes[0];
+
             try {
                 const body = {
                     name,
-                    mode: APP_TYPES[currentAppType].mode,
-                    width: '1920',
-                    height: '1080'
+                    mode: selectedMode,
+                    width: modeConfig.width || '1920',
+                    height: modeConfig.height || '1080'
                 };
 
                 const res = await fetch(API.createRepo, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -1463,26 +1578,62 @@
 
                 container.innerHTML = '';
                 currentTurn = 1;
-                let messages = [];
-
-                if (Array.isArray(data) && data.length > 0 && data[0].messages) {
-                    messages = data[0].messages;
+                
+                // Detect format: new = flat array of {role, message}, old = [{messages: [{human, ai}]}]
+                let rawMessages = [];
+                if (Array.isArray(data) && data.length > 0) {
+                    if (data[0].role) {
+                        // New format: flat array of individual messages
+                        rawMessages = data;
+                    } else if (data[0].messages) {
+                        // Old format: convert to new format
+                        const oldMsgs = data[0].messages;
+                        oldMsgs.forEach(m => {
+                            if (m.human) rawMessages.push({ role: 'user', message: m.human, last_commit: null });
+                            if (m.ai) rawMessages.push({ role: 'ai', message: m.ai, last_commit: m.last_commit || null });
+                        });
+                    }
                 }
 
-                if (messages.length === 0) {
+                if (rawMessages.length === 0) {
                     container.innerHTML = `<div style="padding:20px; font-size:14px; color:#6b7280; text-align:center;">Start building! Send a message.</div>`;
                     return;
                 }
 
-                messages.forEach(m => {
-                    const humanText = extractUserRequest(m.human);
-                    const aiText = m.ai;
+                // Pair up user + ai messages and track commits
+                const pairs = [];
+                for (let i = 0; i < rawMessages.length; i++) {
+                    const msg = rawMessages[i];
+                    if (msg.role === 'user') {
+                        const aiMsg = rawMessages[i + 1] && rawMessages[i + 1].role === 'ai' ? rawMessages[i + 1] : null;
+                        pairs.push({
+                            userText: extractUserRequest(msg.message),
+                            aiText: aiMsg ? aiMsg.message : '',
+                            lastCommit: aiMsg ? aiMsg.last_commit : null,
+                        });
+                        if (aiMsg) i++;
+                    }
+                }
+
+                pairs.forEach((pair, idx) => {
+                    const turnId = currentTurn++;
+
+                    // Revert divider before user message (except first pair)
+                    if (idx > 0) {
+                        const prevCommit = pairs[idx - 1].lastCommit || '';
+                        container.insertAdjacentHTML('beforeend', `
+                            <div class="revert-divider">
+                                <button class="revert-btn" onclick="revertToCommit('${escapeHtml(prevCommit)}')">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> Revert to here
+                                </button>
+                            </div>
+                        `);
+                    }
 
                     const pairHtml = `
-                        <div class="message-pair" data-turn="${currentTurn++}">
-                            <button class="revert-btn" onclick="revertTo(${currentTurn-1})"><i class="fa-solid fa-clock-rotate-left"></i> Revert to here</button>
-                            <div class="msg-bubble msg-user">${marked.parse(humanText, { breaks: true })}</div>
-                            <div class="msg-bubble msg-ai">${marked.parse(aiText, { breaks: true })}</div>
+                        <div class="message-pair" data-turn="${turnId}" data-commit="${escapeHtml(pair.lastCommit || '')}">
+                            <div class="msg-bubble msg-user">${marked.parse(pair.userText, { breaks: true })}</div>
+                            ${pair.aiText ? `<div class="msg-bubble msg-ai">${marked.parse(pair.aiText, { breaks: true })}</div>` : ''}
                         </div>
                     `;
                     container.insertAdjacentHTML('beforeend', pairHtml);
@@ -1591,7 +1742,6 @@
             // For both dummy and real, render the user message and a thinking bubble
             const userHtml = `
                 <div class="message-pair" data-turn="${turnId}" id="pair-${turnId}">
-                    <button class="revert-btn" onclick="revertTo(${turnId})"><i class="fa-solid fa-clock-rotate-left"></i> Revert to here</button>
                     <div class="msg-bubble msg-user">${marked.parse(text, { breaks: true })}</div>
                 </div>
             `;
@@ -1659,6 +1809,14 @@
                 scrollChatBottom();
                 refreshPreview();
 
+                // Reload full conversation to get commit hashes and revert dividers
+                await loadConversation(selectedApp.app_id);
+
+                // Reload configurator data in case the agent changed data.json
+                configDataUrl = null;
+                configData = null;
+                if (activePanelTab === 'config') loadConfiguratorData();
+
             } catch (err) {
                 stopEventPolling();
                 const thinkEl = document.getElementById('thinkingIndicator');
@@ -1672,26 +1830,44 @@
         }
 
         // ── REVERSION ──
-        function revertTo(targetTurn) {
-            const pairs = document.querySelectorAll('.message-pair');
-            let removedCount = 0;
+        async function revertToCommit(commitHash) {
+            if (!selectedApp || selectedApp.isDummy) return;
+            if (!commitHash) {
+                showToast('error', 'No commit hash available for this revert point.');
+                return;
+            }
 
-            pairs.forEach(pair => {
-                const turn = parseInt(pair.getAttribute('data-turn'));
-                if (turn > targetTurn) {
-                    pair.remove();
-                    removedCount++;
-                }
-            });
+            const confirmed = confirm('Revert the app to this point? This will undo all changes after this message.');
+            if (!confirmed) return;
 
-            if(removedCount > 0) {
-                const chatHistory = document.getElementById('chatHistory');
-                const notice = document.createElement('div');
-                notice.style.cssText = "text-align:center; font-size:12px; color:#ef4444; padding:10px;";
-                notice.innerText = `Reverted app state back to step ${targetTurn}. Subsequent messages cleared.`;
-                chatHistory.appendChild(notice);
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-                setTimeout(() => notice.remove(), 3000);
+            showToast('info', 'Reverting…');
+
+            try {
+                const resetRes = await fetch(API.resetRepo, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ app_id: selectedApp.app_id, reset_hash: commitHash })
+                });
+                if (!resetRes.ok) throw new Error('Reset failed (HTTP ' + resetRes.status + ')');
+
+                await fetch(API.republishRepo, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ app_id: selectedApp.app_id })
+                });
+
+                showToast('success', 'Reverted and republished!');
+
+                setTimeout(() => {
+                    refreshPreview();
+                    loadConversation(selectedApp.app_id);
+                    // Reset configurator
+                    configDataUrl = null;
+                    configData = null;
+                    if (activePanelTab === 'config') loadConfiguratorData();
+                }, 2000);
+            } catch (err) {
+                showToast('error', 'Revert failed: ' + err.message);
             }
         }
 
@@ -1715,29 +1891,298 @@
         }
 
         // --- Tab Switching Logic ---
+        let activePanelTab = 'chat';
+
         function switchTab(tabId, element) {
+            activePanelTab = tabId;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             element.classList.add('active');
             document.querySelectorAll('.tab-pane').forEach(c => c.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'config' && selectedApp && !selectedApp.isDummy) {
+                loadConfiguratorData();
+            }
         }
 
-        // Accordion mock logic
-        document.querySelectorAll('.accordion-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const content = header.nextElementSibling;
-                const icon = header.querySelector('i');
-                if(content && content.classList.contains('accordion-content')) {
-                    if(content.style.display === 'none') {
-                        content.style.display = 'flex';
-                        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-                    } else {
-                        content.style.display = 'none';
-                        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        // ── CONFIGURATOR ──
+        let configData = null;
+        let configDataUrl = null;
+        let expandedItems = {};
+        let pendingFileUploads = {};
+        let configDirty = false;
+
+        const GITHUB_OWNER = 'skoop-n8n-continue';
+        const GITHUB_TOKEN = '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';
+        const REPUBLISH_URL = 'https://n8n.skoopsignage.dev/webhook/republish_repo_99dj348';
+
+        function getDataJsonUrl(app) {
+            return 'https://skoop-dev-code-agent.s3.us-east-1.amazonaws.com/n8n_continue/' + app.app_id + '/data.json';
+        }
+
+        async function loadConfiguratorData() {
+            if (!selectedApp || selectedApp.isDummy) return;
+            const body = document.getElementById('configBody');
+            const url = getDataJsonUrl(selectedApp);
+            if (configDataUrl === url && configData) return;
+
+            body.innerHTML = '<div class="config-loading"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:20px; color:var(--accent);"></i><span>Loading data.json…</span></div>';
+
+            try {
+                const res = await fetch(url + '?_cb=' + Date.now());
+                if (!res.ok) {
+                    if (res.status === 404 || res.status === 403) {
+                        body.innerHTML = '<div class="config-error"><div class="config-error-msg">No data.json found for this app</div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">This app may not have been generated with the configurator system yet.</div><button class="config-retry" onclick="reloadConfigurator()">Retry</button></div>';
+                        return;
+                    }
+                    throw new Error('HTTP ' + res.status);
+                }
+                const data = await res.json();
+                configData = data;
+                configDataUrl = url;
+                expandedItems = {};
+                renderConfigurator(data);
+            } catch (err) {
+                body.innerHTML = '<div class="config-error"><div class="config-error-msg">Failed to load: ' + escapeHtml(err.message) + '</div><button class="config-retry" onclick="reloadConfigurator()">Retry</button></div>';
+            }
+        }
+
+        function reloadConfigurator() {
+            configDataUrl = null; configData = null; configDirty = false;
+            for (const k of Object.keys(pendingFileUploads)) { if (pendingFileUploads[k].previewUrl) URL.revokeObjectURL(pendingFileUploads[k].previewUrl); }
+            pendingFileUploads = {};
+            document.getElementById('configSaveBar').style.display = 'none';
+            loadConfiguratorData();
+        }
+
+        function resetConfiguratorState() {
+            configData = null; configDataUrl = null; expandedItems = {}; configDirty = false;
+            for (const k of Object.keys(pendingFileUploads)) { if (pendingFileUploads[k].previewUrl) URL.revokeObjectURL(pendingFileUploads[k].previewUrl); }
+            pendingFileUploads = {};
+            document.getElementById('configSaveBar').style.display = 'none';
+            document.getElementById('configBody').innerHTML = '<div class="config-empty"><i class="fa-solid fa-gear"></i><span class="config-empty-text">Select an app to configure</span></div>';
+        }
+
+        function renderConfigurator(data) {
+            const body = document.getElementById('configBody');
+            if (!data || !data.sections) { body.innerHTML = '<div class="config-error"><div class="config-error-msg">Invalid data.json — missing sections</div></div>'; return; }
+
+            let html = '';
+            if (data.app_id) html += '<div style="font-size:10px;font-family:monospace;color:#9ca3af;padding:2px 4px;">' + escapeHtml(data.app_id) + ' · v' + (data.document_version || '?') + '</div>';
+
+            for (const [sectionKey, sectionVal] of Object.entries(data.sections)) {
+                html += renderSection(sectionKey, sectionVal);
+            }
+            body.innerHTML = html;
+        }
+
+        function renderSection(key, section) {
+            if (section.type === 'collection') return renderCollectionSection(key, section);
+            const fieldCount = Object.keys(section).length;
+            const label = formatLabel(key);
+            let fieldsHtml = '';
+            for (const [fk, fv] of Object.entries(section)) { if (fv && fv.type) fieldsHtml += renderField(key, fk, fv); }
+            if (!fieldsHtml) return '';
+            return '<div class="config-section" id="section-' + key + '"><div class="config-section-header" onclick="toggleSection(\'' + key + '\')"><i class="fa-solid fa-chevron-down config-section-chevron"></i><span class="config-section-title">' + escapeHtml(label) + '</span><span class="config-section-badge">' + fieldCount + ' fields</span></div><div class="config-section-body">' + fieldsHtml + '</div></div>';
+        }
+
+        function renderField(sectionKey, fieldKey, field) {
+            const label = field.label || formatLabel(fieldKey);
+            const type = field.type;
+            const value = field.value;
+            const meta = field.meta || {};
+            const path = sectionKey + '.' + fieldKey;
+            let ed = '';
+
+            switch (type) {
+                case 'text': ed = '<input class="config-input" type="text" value="' + escapeAttr(value || '') + '" data-path="' + path + '" onchange="onFieldChange(this)" />'; break;
+                case 'textarea': ed = '<textarea class="config-input" data-path="' + path + '" onchange="onFieldChange(this)">' + escapeHtml(value || '') + '</textarea>'; break;
+                case 'number': {
+                    const step = meta.format === 'currency' ? '0.01' : meta.format === 'integer' ? '1' : 'any';
+                    const pfx = meta.format === 'currency' ? '<span style="color:#9ca3af;font-size:12px;margin-right:-4px;">$</span>' : '';
+                    ed = '<div style="display:flex;align-items:center;gap:4px;">' + pfx + '<input class="config-input" type="number" step="' + step + '" value="' + (value ?? '') + '" data-path="' + path + '" onchange="onFieldChange(this)" /></div>'; break;
+                }
+                case 'boolean': ed = '<div class="config-toggle-wrap"><span style="font-size:12px;color:#9ca3af;">' + (value ? 'Enabled' : 'Disabled') + '</span><div class="config-toggle ' + (value ? 'on' : '') + '" data-path="' + path + '" onclick="onToggle(this)"><div class="config-toggle-knob"></div></div></div>'; break;
+                case 'color': ed = '<div class="config-color-wrap"><div class="config-color-swatch" style="background:' + escapeAttr(value || '#000') + '"><input type="color" value="' + escapeAttr(toHex(value) || '#000000') + '" data-path="' + path + '" onchange="onColorChange(this)" /></div><input class="config-input config-color-hex" type="text" value="' + escapeAttr(value || '') + '" data-path="' + path + '" onchange="onFieldChange(this)" /></div>'; break;
+                case 'enum': { const opts = (meta.options || []).map(o => '<option value="' + escapeAttr(o) + '" ' + (o === value ? 'selected' : '') + '>' + escapeHtml(o) + '</option>').join(''); ed = '<select class="config-input" data-path="' + path + '" onchange="onFieldChange(this)">' + opts + '</select>'; break; }
+                case 'file': {
+                    const isImage = (meta.accepted_formats || []).some(f => ['png','jpg','jpeg','webp','svg','gif'].includes(f));
+                    const acceptStr = (meta.accepted_formats || []).map(f => '.' + f).join(',');
+                    const pf = pendingFileUploads[path];
+                    let fph = '';
+                    if (pf) { if (pf.previewUrl) fph = '<img class="config-file-preview" src="' + pf.previewUrl + '" alt="" />'; fph += '<div class="config-file-pending">⏳ Pending: ' + escapeHtml(pf.file.name) + '</div>'; }
+                    else if (isImage && value) { fph = '<img class="config-file-preview" src="' + getAssetFullUrl(value) + '" alt="" onerror="this.style.display=\'none\'" />'; }
+                    ed = '<div class="config-file-wrap">' + fph + '<div class="config-file-path" title="' + escapeAttr(value || '') + '">' + escapeHtml(value || '(no file)') + '</div><div class="config-file-actions"><label class="config-file-upload-btn"><i class="fa-solid fa-cloud-arrow-up"></i> ' + (value ? 'Replace' : 'Upload') + '<input type="file" accept="' + acceptStr + '" style="display:none;" onchange="onFileSelected(this, \'' + path + '\', \'' + escapeAttr(meta.path || 'assets/') + '\', \'' + acceptStr + '\')" /></label></div></div>'; break;
+                }
+                case 'url': ed = '<input class="config-input" type="url" value="' + escapeAttr(value || '') + '" data-path="' + path + '" onchange="onFieldChange(this)" placeholder="https://" />'; break;
+                case 'datetime': ed = '<input class="config-input" type="datetime-local" value="' + escapeAttr(value || '') + '" data-path="' + path + '" onchange="onFieldChange(this)" />'; break;
+                default: ed = '<input class="config-input" type="text" value="' + escapeAttr(String(value || '')) + '" data-path="' + path + '" onchange="onFieldChange(this)" />';
+            }
+            return '<div class="config-field"><label class="config-field-label">' + escapeHtml(label) + ' <span class="config-field-type">' + type + '</span></label>' + ed + '</div>';
+        }
+
+        function renderCollectionSection(key, collection) {
+            const label = collection.label || formatLabel(key);
+            const items = collection.value || [];
+            const schema = collection.item_schema || {};
+            const schemaKeys = Object.keys(schema).filter(k => k !== 'id');
+            const hasId = !!schema.id;
+            const visibleCols = schemaKeys.slice(0, 5);
+            let tableHtml = '';
+            if (items.length > 0) {
+                let thead = '<tr>';
+                if (hasId) thead += '<th style="width:90px;">ID</th>';
+                visibleCols.forEach(col => { thead += '<th>' + escapeHtml(schema[col]?.label || formatLabel(col)) + '</th>'; });
+                thead += '<th style="width:36px;"></th></tr>';
+                let tbody = '';
+                items.forEach((item, idx) => {
+                    tbody += '<tr>';
+                    if (hasId) tbody += '<td><span class="cell-id" title="' + escapeAttr(item.id || '') + '">' + escapeHtml(item.id || '') + '</span></td>';
+                    visibleCols.forEach(col => { tbody += renderCollectionCell(key, idx, col, schema[col], item[col]); });
+                    tbody += '<td><button style="background:none;border:1px solid var(--border-color);border-radius:4px;width:24px;height:24px;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;" onclick="toggleItemDetail(\'' + key + '\', ' + idx + ')" title="Edit"><i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></button></td>';
+                    tbody += '</tr>';
+                    if (expandedItems[key + '-' + idx]) { tbody += '<tr><td colspan="' + ((hasId ? 1 : 0) + visibleCols.length + 1) + '" style="padding:0;">' + renderItemDrawer(key, idx, schema, item) + '</td></tr>'; }
+                });
+                tableHtml = '<div class="config-collection-table"><table><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table></div>';
+            }
+            return '<div class="config-section" id="section-' + key + '"><div class="config-section-header" onclick="toggleSection(\'' + key + '\')"><i class="fa-solid fa-chevron-down config-section-chevron"></i><span class="config-section-title">' + escapeHtml(label) + '</span><span class="config-section-badge">' + items.length + ' items</span></div><div class="config-section-body">' + tableHtml + (items.length === 0 ? '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:12px;">No items yet</div>' : '') + '</div></div>';
+        }
+
+        function renderCollectionCell(collKey, rowIdx, colKey, schema, value) {
+            const type = schema?.type || 'text';
+            const path = collKey + '.' + rowIdx + '.' + colKey;
+            switch (type) {
+                case 'boolean': return '<td><input type="checkbox" class="cell-bool" ' + (value ? 'checked' : '') + ' data-path="' + path + '" onchange="onCollectionCellChange(this)" /></td>';
+                case 'color': return '<td><div class="cell-color"><div class="cell-color-dot" style="background:' + escapeAttr(value || '#000') + '"></div><span style="font-size:11px;color:#9ca3af;font-family:monospace;">' + escapeHtml(value || '') + '</span></div></td>';
+                case 'file': { const isImg = (schema?.meta?.accepted_formats || []).some(f => ['png','jpg','jpeg','webp','svg','gif'].includes(f)); if (isImg && value) return '<td><div class="cell-file"><img class="cell-file-thumb" src="' + getAssetFullUrl(value) + '" alt="" onerror="this.style.display=\'none\'" /><span class="cell-file-name">' + escapeHtml(value.split('/').pop()) + '</span></div></td>'; return '<td><span class="cell-file-name">' + escapeHtml(value ? value.split('/').pop() : '—') + '</span></td>'; }
+                case 'number': return '<td><input class="cell-input" type="number" step="' + (schema?.meta?.format === 'currency' ? '0.01' : 'any') + '" value="' + (value ?? '') + '" data-path="' + path + '" onchange="onCollectionCellChange(this)" style="max-width:80px;" /></td>';
+                case 'textarea': return '<td><span style="font-size:11px;color:var(--text-secondary);max-width:140px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeAttr(value || '') + '">' + escapeHtml((value || '').substring(0, 50)) + '</span></td>';
+                default: return '<td><input class="cell-input" type="text" value="' + escapeAttr(value || '') + '" data-path="' + path + '" onchange="onCollectionCellChange(this)" /></td>';
+            }
+        }
+
+        function renderItemDrawer(collKey, rowIdx, schema, item) {
+            let fields = '';
+            for (const [fk, fs] of Object.entries(schema)) { fields += renderField(collKey + '.' + rowIdx, fk, { ...fs, value: item[fk] }); }
+            return '<div class="config-item-drawer"><div class="config-item-drawer-header"><span class="config-item-drawer-title">' + escapeHtml(item.name || item.id || 'Item ' + (rowIdx + 1)) + '</span><button class="config-item-drawer-close" onclick="toggleItemDetail(\'' + collKey + '\', ' + rowIdx + ')"><i class="fa-solid fa-xmark" style="font-size:12px;"></i></button></div>' + fields + '</div>';
+        }
+
+        // ── CONFIGURATOR EVENTS ──
+        function toggleSection(key) { const el = document.getElementById('section-' + key); if (el) el.classList.toggle('collapsed'); }
+        function toggleItemDetail(collKey, idx) { expandedItems[collKey + '-' + idx] = !expandedItems[collKey + '-' + idx]; renderConfigurator(configData); }
+
+        function onFieldChange(el) { const p = el.dataset.path; setConfigValue(p, el.type === 'number' ? parseFloat(el.value) : el.value); }
+        function onToggle(el) { const p = el.dataset.path; const isOn = el.classList.toggle('on'); const lbl = el.closest('.config-toggle-wrap')?.querySelector('span'); if (lbl) lbl.textContent = isOn ? 'Enabled' : 'Disabled'; setConfigValue(p, isOn); }
+        function onColorChange(el) { const p = el.dataset.path; const hex = el.value; const sw = el.closest('.config-color-swatch'); if (sw) sw.style.background = hex; const hi = el.closest('.config-color-wrap')?.querySelector('.config-color-hex'); if (hi) hi.value = hex; setConfigValue(p, hex); }
+        function onCollectionCellChange(el) { const p = el.dataset.path; let v; if (el.type === 'checkbox') v = el.checked; else if (el.type === 'number') v = parseFloat(el.value); else v = el.value; setConfigValue(p, v); }
+
+        function onFileSelected(inputEl, dataPath, metaPath, acceptStr) {
+            const file = inputEl.files[0]; if (!file) return;
+            const ext = file.name.split('.').pop().toLowerCase();
+            const pathParts = dataPath.split('.');
+            let filename;
+            if (pathParts.length >= 3 && !isNaN(pathParts[1])) {
+                const sectionKey = pathParts[0]; const itemIdx = parseInt(pathParts[1]); const fieldKey = pathParts[pathParts.length - 1];
+                const section = configData.sections[sectionKey]; const itemId = section?.value?.[itemIdx]?.id || ('item_' + itemIdx);
+                filename = itemId + '_' + fieldKey + '.' + ext;
+            } else { filename = pathParts[pathParts.length - 1] + '.' + ext; }
+            const repoPath = (metaPath || 'assets/').replace(/\/$/, '') + '/' + filename;
+            const isImg = ['png','jpg','jpeg','webp','svg','gif'].includes(ext);
+            const previewUrl = isImg ? URL.createObjectURL(file) : null;
+            const reader = new FileReader();
+            reader.onload = () => { pendingFileUploads[dataPath] = { file, base64: reader.result.split(',')[1], repoPath, previewUrl }; setConfigValue(dataPath, repoPath); renderConfigurator(configData); };
+            reader.readAsDataURL(file);
+            inputEl.value = '';
+        }
+
+        function setConfigValue(path, value) {
+            if (!configData) return;
+            const parts = path.split('.');
+            let obj = configData.sections;
+            for (let i = 0; i < parts.length - 1; i++) {
+                const key = parts[i];
+                if (!isNaN(key)) obj = obj.value[parseInt(key)];
+                else if (obj[key]?.type === 'collection') obj = obj[key];
+                else obj = obj[key];
+            }
+            const lastKey = parts[parts.length - 1];
+            if (obj && obj[lastKey] !== undefined) {
+                if (obj[lastKey] && obj[lastKey].type) obj[lastKey].value = value;
+                else obj[lastKey] = value;
+            }
+            markConfigDirty();
+        }
+
+        function markConfigDirty() { if (!configDirty) { configDirty = true; document.getElementById('configSaveBar').style.display = 'flex'; const s = document.getElementById('configSaveStatus'); s.className = 'config-save-status'; s.textContent = 'Unsaved changes'; } }
+        function clearConfigDirty() { configDirty = false; }
+
+        // ── SAVE TO GITHUB ──
+        async function saveConfigToGitHub() {
+            if (!selectedApp || !configData) return;
+            const btn = document.getElementById('configSaveBtn'); const status = document.getElementById('configSaveStatus');
+            btn.disabled = true; btn.textContent = 'Saving…'; status.className = 'config-save-status saving';
+            const repo = selectedApp.app_id;
+            const headers = { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+            const apiBase = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + repo + '/contents/';
+
+            try {
+                const pendingKeys = Object.keys(pendingFileUploads);
+                if (pendingKeys.length > 0) {
+                    for (let i = 0; i < pendingKeys.length; i++) {
+                        const pk = pendingKeys[i]; const pf = pendingFileUploads[pk];
+                        status.textContent = 'Uploading ' + (i + 1) + '/' + pendingKeys.length + ': ' + pf.file.name + '…';
+                        let fileSha = null;
+                        try { const gr = await fetch(apiBase + pf.repoPath, { headers }); if (gr.ok) fileSha = (await gr.json()).sha; } catch (e) {}
+                        const pb = { message: 'Upload ' + pf.file.name + ' via configurator', content: pf.base64, committer: { name: 'Skoop Configurator', email: 'configurator@skoopsignage.com' } };
+                        if (fileSha) pb.sha = fileSha;
+                        const pr = await fetch(apiBase + pf.repoPath, { method: 'PUT', headers, body: JSON.stringify(pb) });
+                        if (!pr.ok) throw new Error('Failed to upload ' + pf.file.name);
                     }
                 }
-            });
-        });
+
+                status.textContent = 'Committing data.json…';
+                let sha = null;
+                try { const gr = await fetch(apiBase + 'data.json', { headers }); if (gr.ok) sha = (await gr.json()).sha; } catch (e) {}
+                const jsonB64 = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
+                const putBody = { message: 'Update data.json via configurator', content: jsonB64, committer: { name: 'Skoop Configurator', email: 'configurator@skoopsignage.com' } };
+                if (sha) putBody.sha = sha;
+                const putRes = await fetch(apiBase + 'data.json', { method: 'PUT', headers, body: JSON.stringify(putBody) });
+                if (!putRes.ok) throw new Error('GitHub commit failed');
+
+                status.textContent = 'Publishing to S3…';
+                await fetch(REPUBLISH_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app_id: selectedApp.app_id }) }).catch(() => {});
+
+                for (const k of Object.keys(pendingFileUploads)) { if (pendingFileUploads[k].previewUrl) URL.revokeObjectURL(pendingFileUploads[k].previewUrl); }
+                pendingFileUploads = {};
+                status.className = 'config-save-status success'; status.textContent = 'Published! Refreshing…';
+                setTimeout(() => { refreshPreview(); renderConfigurator(configData); status.textContent = 'Saved & published'; setTimeout(() => { if (!configDirty) status.textContent = ''; }, 3000); }, 2000);
+                clearConfigDirty();
+                showToast('success', 'Configuration saved and published!');
+            } catch (err) {
+                status.className = 'config-save-status error'; status.textContent = 'Failed: ' + err.message;
+                showToast('error', 'Save failed: ' + err.message);
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save &amp; Publish';
+            }
+        }
+
+        // ── CONFIGURATOR HELPERS ──
+        function getAssetFullUrl(relativePath) { if (!selectedApp || !relativePath) return ''; return 'https://skoop-dev-code-agent.s3.us-east-1.amazonaws.com/n8n_continue/' + selectedApp.app_id + '/' + relativePath + '?_cb=' + Date.now(); }
+        function formatLabel(key) { return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+        function escapeAttr(str) { return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function toHex(color) { if (!color) return '#000000'; if (color.startsWith('#') && (color.length === 7 || color.length === 4)) return color; if (color.startsWith('rgb')) { const m = color.match(/[\d.]+/g); if (m && m.length >= 3) return '#' + [Math.round(parseFloat(m[0])), Math.round(parseFloat(m[1])), Math.round(parseFloat(m[2]))].map(c => c.toString(16).padStart(2, '0')).join(''); } return color; }
+
+        // ── PANEL RESIZE ──
+        (function setupPanelResize() {
+            const handle = document.getElementById('panelResizeHandle');
+            const panel = document.getElementById('editorSidebar');
+            const overlay = document.getElementById('resizeOverlay');
+            if (!handle || !panel || !overlay) return;
+            let isDragging = false, startX = 0, startWidth = 0;
+            handle.addEventListener('mousedown', (e) => { e.preventDefault(); isDragging = true; startX = e.clientX; startWidth = panel.offsetWidth; handle.classList.add('dragging'); overlay.classList.add('active'); document.body.style.userSelect = 'none'; });
+            document.addEventListener('mousemove', (e) => { if (!isDragging) return; e.preventDefault(); const delta = startX - e.clientX; const nw = Math.max(300, Math.min(700, startWidth + delta)); panel.style.width = nw + 'px'; panel.style.flexShrink = '0'; });
+            document.addEventListener('mouseup', () => { if (!isDragging) return; isDragging = false; handle.classList.remove('dragging'); overlay.classList.remove('active'); document.body.style.userSelect = ''; });
+        })();
     </script>
 </body>
 </html>
